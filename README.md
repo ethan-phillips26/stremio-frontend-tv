@@ -1,4 +1,4 @@
-# Streaming computer
+# stremio-frontend-tv
 
 A smart-TV-style front end for a Linux laptop connected to a TV, controlled from your phone.
 

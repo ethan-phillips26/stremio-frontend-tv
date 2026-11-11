@@ -1,5 +1,5 @@
 {
-  "name": "streamingcomputer",
+  "name": "stremio-frontend-tv",
   "version": "0.1.0",
   "private": true,
   "description": "TV-style frontend for a streaming laptop: tvOS-like launcher, Stremio core, mpv player, phone remote",
