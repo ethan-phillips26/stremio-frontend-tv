@@ -1,0 +1,11 @@
+import { startServer, open, shot, sleep, key } from './e2e-helpers.mjs';
+const srv = startServer(); await sleep(1200);
+const { browser, page, logs } = await open('/?static');
+await sleep(7000);
+await shot(page, '02-home');
+await key(page, 'ArrowRight', 2, 200); await shot(page, '03-home-search-focus');
+await key(page, 'ArrowLeft', 2, 200);
+await key(page, 'ArrowDown', 1, 900); await shot(page, '04-home-row2');
+await key(page, 'ArrowDown', 4, 700); await shot(page, '05-home-row-last');
+console.log('screen:', await page.evaluate(() => document.body.dataset.screen));
+await browser.close(); srv.kill();

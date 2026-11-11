@@ -1,0 +1,8 @@
+{
+  "port": 8080,
+  "lite": false,
+  "browser": "auto",
+  "pin": "",
+  "playback": { "mpv": "mpv", "maxResolution": 1080, "cacheMiB": 96 },
+  "apps": []
+}

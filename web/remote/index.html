@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="/remote/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b0d12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>TV Remote</title>
+<link rel="stylesheet" href="remote.css">
+</head>
+<body>
+<header class="top">
+  <div class="conn" id="conn"><i></i><span id="connText">Connecting…</span></div>
+  <div class="now" id="now" hidden>
+    <div class="now-bar"><i id="nowFill"></i></div>
+    <div class="now-t"><span id="nowState">Playing</span><span id="nowTime">0:00 / 0:00</span></div>
+  </div>
+</header>
+
+<main>
+  <!-- Remote -->
+  <section class="tab on" id="tab-remote" aria-label="Remote">
+    <div class="remote" id="remote">
+      <div class="pad" id="pad">
+        <button class="arrow up" data-key="ArrowUp" aria-label="Up"><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
+        <button class="arrow right" data-key="ArrowRight" aria-label="Right"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="arrow down" data-key="ArrowDown" aria-label="Down"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="arrow left" data-key="ArrowLeft" aria-label="Left"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button class="okbtn" data-key="Enter" aria-label="Select"><span>OK</span></button>
+      </div>
+      <div class="r-row two">
+        <button class="rb" data-key="Escape" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="rb" id="homeBtn" aria-label="Home"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2.5"/><path d="M9 20.500h6"/></svg></button>
+      </div>
+      <div class="r-row three">
+        <button class="rb" data-media="seek" data-value="-10" aria-label="Back 10 seconds"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6"/><text x="12" y="16.5" text-anchor="middle">10</text></svg></button>
+        <button class="rb main" data-media="play_pause" aria-label="Play or pause"><svg viewBox="0 0 24 24" class="pp"><path d="M7 5v14l11-7z"/></svg></button>
+        <button class="rb" data-media="seek" data-value="10" aria-label="Forward 10 seconds"><svg viewBox="0 0 24 24"><path d="M12 5V2l5 4-5 4V7a6 6 0 1 0 6 6"/><text x="12" y="16.5" text-anchor="middle">10</text></svg></button>
+      </div>
+      <div class="r-row playonly" id="playOnly" hidden>
+        <button class="chip" data-media="subs">Subtitles</button>
+        <button class="chip" data-media="audio">Audio</button>
+        <button class="chip" data-media="seek" data-value="60">+1 min</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Keyboard -->
+  <section class="tab" id="tab-kbd" aria-label="Keyboard">
+    <label class="tfield" id="tfield">
+      <span class="tlabel" id="tlabel">Type to send to the TV</span>
+      <input id="text" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="send" placeholder="Start typing…">
+    </label>
+    <div class="row2">
+      <button class="pill" id="sendBtn"><span>Send</span></button>
+      <button class="pill" id="clearBtn"><span>Clear</span></button>
+    </div>
+    <div class="keys">
+      <button class="pill" data-key="Backspace"><span>Delete</span></button>
+      <button class="pill" data-key="Enter"><span>Enter</span></button>
+      <button class="pill" data-key="Tab"><span>Tab</span></button>
+      <button class="pill" data-key="Escape"><span>Esc</span></button>
+    </div>
+  </section>
+
+  <!-- Apps & power -->
+  <section class="tab" id="tab-apps" aria-label="Power">
+    <h2 id="appsH" hidden>Open</h2>
+    <div class="apps" id="apps" hidden></div>
+    <h2>Power</h2>
+    <div class="power">
+      <button class="pill" data-power="suspend"><span>Sleep</span></button>
+      <button class="pill warn" data-power="reboot"><span>Restart</span></button>
+      <button class="pill warn" data-power="poweroff"><span>Power off</span></button>
+    </div>
+    <p class="note" id="appsNote"></p>
+  </section>
+</main>
+
+<nav class="tabs" role="tablist">
+  <button class="on" data-tab="remote" role="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.4"/></svg><span>Remote</span></button>
+  <button data-tab="kbd" role="tab"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.500"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></svg><span>Keyboard</span></button>
+  <button data-tab="apps" role="tab"><svg viewBox="0 0 24 24"><path d="M12 3.5v8"/><path d="M6.6 7.4a8 8 0 1 0 10.8 0"/></svg><span id="tabAppsLabel">Power</span></button>
+</nav>
+
+<div class="dialog" id="dialog" hidden><div class="dialog-card">
+  <h3 id="dlgTitle"></h3><p id="dlgMsg"></p>
+  <input id="dlgInput" inputmode="numeric" autocomplete="off" hidden>
+  <div class="dlg-btns"><button class="pill" id="dlgCancel"><span>Cancel</span></button><button class="pill primary" id="dlgOk"><span>OK</span></button></div>
+</div></div>
+<div class="toast" id="toast" role="status"></div>
+<script src="remote.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "streamingcomputer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TV-style frontend for a streaming laptop: tvOS-like launcher, Stremio core, mpv player, phone remote",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --dev",
+    "test": "node tools/e2e-regression.mjs",
+    "pack": "sh tools/pack.sh"
+  },
+  "dependencies": {
+    "@stremio/stremio-core-web": "0.66.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "puppeteer-core": "^25.16.0"
+  }
+}

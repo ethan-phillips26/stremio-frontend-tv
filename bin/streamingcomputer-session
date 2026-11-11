@@ -1,0 +1,81 @@
+#!/bin/sh
+# Boots the TV experience: server + full-screen launcher. Started automatically at login by the autostart entry.
+# Stop it for maintenance:  touch ~/.cache/streamingcomputer/stop   (then close the browser)
+ROOT=$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)
+PORT=${STREAM_PORT:-8080}
+DATA=${STREAM_DATA:-$HOME/.local/share/streamingcomputer}
+CACHE=$HOME/.cache/streamingcomputer
+STOP=$CACHE/stop
+URL="http://127.0.0.1:$PORT/"
+mkdir -p "$DATA/profiles/launcher" "$CACHE"
+rm -f "$STOP"
+exec >>"$DATA/session.log" 2>&1
+echo "== session start $(date)"
+
+# never blank, lock or sleep the display while this is the TV
+if [ -n "$DISPLAY" ]; then
+  command -v xset >/dev/null 2>&1 && xset s off -dpms s noblank
+  command -v unclutter >/dev/null 2>&1 && (unclutter -idle 1 -root >/dev/null 2>&1 &)
+fi
+
+# server
+up() { python3 - "$PORT" <<'PY'
+import socket, sys
+s = socket.socket(); s.settimeout(0.5)
+try: s.connect(("127.0.0.1", int(sys.argv[1]))); sys.exit(0)
+except OSError: sys.exit(1)
+PY
+}
+if ! up; then
+  python3 "$ROOT/server/server.py" --port "$PORT" >>"$DATA/server.log" 2>&1 &
+  i=0; while ! up && [ $i -lt 40 ]; do sleep 0.5; i=$((i + 1)); done
+fi
+up || { echo "server did not start; see $DATA/server.log"; exit 1; }
+
+# browser: honour config "browser", else first one found
+pick() {
+  for b in ${STREAM_BROWSER:-chromium chromium-browser google-chrome-stable google-chrome brave-browser firefox}; do
+    command -v "$b" >/dev/null 2>&1 && { echo "$b"; return; }
+  done
+}
+B=$(pick)
+[ -n "$B" ] || { echo "no supported browser found (install firefox or chromium)"; exit 1; }
+echo "browser: $B"
+
+PROFILE=$DATA/profiles/launcher
+case "$B" in
+  firefox*)
+    cat > "$PROFILE/user.js" <<'JS'
+user_pref("browser.shell.checkDefaultBrowser", false);
+user_pref("browser.sessionstore.resume_from_crash", false);
+user_pref("browser.tabs.warnOnClose", false);
+user_pref("browser.startup.homepage_override.mstone", "ignore");
+user_pref("datareporting.policy.dataSubmissionEnabled", false);
+user_pref("toolkit.telemetry.enabled", false);
+user_pref("media.autoplay.default", 0);
+user_pref("layers.acceleration.force-enabled", true);
+user_pref("gfx.webrender.all", true);
+user_pref("gfx.x11-egl.force-enabled", true);
+user_pref("gfx.canvas.accelerated", true);
+user_pref("image.mem.decode_bytes_at_a_time", 65536);
+user_pref("layout.frame_rate", 60);
+user_pref("media.ffmpeg.vaapi.enabled", true);
+user_pref("general.smoothScroll", false);
+user_pref("browser.cache.disk.enable", true);
+user_pref("dom.webnotifications.enabled", false);
+JS
+    run_browser() { "$B" --kiosk --no-remote --profile "$PROFILE" "$URL"; } ;;
+  *)
+    run_browser() { "$B" --kiosk --app="$URL" --user-data-dir="$PROFILE" --no-first-run --no-default-browser-check \
+        --password-store=basic --noerrdialogs --disable-infobars --disable-session-crashed-bubble \
+        --enable-features=VaapiVideoDecoder --autoplay-policy=no-user-gesture-required; } ;;
+esac
+
+# keep the launcher alive: if the browser crashes or is closed, bring it back
+while [ ! -e "$STOP" ]; do
+  run_browser
+  echo "browser exited ($?) $(date)"
+  [ -e "$STOP" ] && break
+  sleep 2
+done
+echo "== session stop"

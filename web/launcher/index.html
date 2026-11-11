@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home</title>
+<link rel="stylesheet" href="launcher.css">
+</head>
+<body>
+  <div class="wall" aria-hidden="true">
+    <i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>
+    <div class="wall-shade"></div>
+  </div>
+  <header class="status" id="status">
+    <span class="status-item" id="net" title="Network">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9a14 14 0 0 1 19 0M5.7 12.4a9.5 9.5 0 0 1 12.6 0M9 15.7a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1.2" class="dot"/></svg>
+    </span>
+    <time id="clock">--:--</time>
+  </header>
+  <div id="stage"></div>
+  <div class="sheet" id="sheet" hidden role="alertdialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-panel">
+      <h3 id="sheetTitle"></h3>
+      <p id="sheetMsg"></p>
+      <p class="sheet-big" id="sheetBig" hidden></p>
+      <div class="sheet-buttons" id="sheetButtons"></div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
